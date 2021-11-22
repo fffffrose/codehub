@@ -2,8 +2,7 @@ const errorType = require('../constants/error-types');
 const service = require('../service/user.service');
 const md5password = require('../utils/password-handle');
 
-
-const verifyUser = async (ctx, next) => {
+const verifyLogin = async (ctx, next) => {
     //获取用户名和密码
     const { name, password } = ctx.request.body
     //判断用户名和密码不能空
@@ -13,20 +12,20 @@ const verifyUser = async (ctx, next) => {
     }
     //判断用户名是否存在数据库
     const result = await service.getUserByName(name)
-    if (result.length) {
-        const error = new Error(errorType.USER_ALREADY_EXISTS)
+    console.log(result);
+    const user = result[0]
+    if (!user) {
+        const error = new Error(errorType.USER_DOES_NOT_EXISTS)
         return ctx.app.emit(`error`, error, ctx)
+    }
+    //判断密码是否一致(加密)
+    if(md5password(password) !== user.password){
+        const error = new Error(errorType.PASSWORD_IS_INCORRECT)
+        return ctx.app.emit(`error`,error,ctx)
     }
 
     await next()
 }
-const handlePassword = async (ctx, next) => {
-    //密码加密
-    const { password } = ctx.request.body
-    ctx.request.body.password = md5password(password)
-    await next()
-}
 module.exports = {
-    verifyUser,
-    handlePassword
+    verifyLogin
 }
