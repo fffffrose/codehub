@@ -26,6 +26,7 @@ const verifyLogin = async (ctx, next) => {
         const error = new Error(errorType.PASSWORD_IS_INCORRECT)
         return ctx.app.emit(`error`, error, ctx)
     }
+    console.log(user);
     ctx.user = user
     await next()
 }

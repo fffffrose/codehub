@@ -27,7 +27,12 @@ class MomentController {
         const { momentId } = ctx.params
         const { content } = ctx.request.body
         //修改内容
-        const res = await momentService.update(content,momentId) 
+        const res = await momentService.update(content, momentId)
+        ctx.body = res
+    }
+    async remove(ctx, next) {
+        const { momentId } = ctx.params
+        const res = await momentService.remove(momentId)
         ctx.body = res
     }
 }
