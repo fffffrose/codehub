@@ -32,6 +32,10 @@ const verifyAuth = async (ctx, next) => {
     console.log(`验证授权`);
     //获取token
     const authorization = ctx.headers.authorization
+    if (!authorization) {
+        const error = new Error(errorType.UNAUTHORIZATION)
+        return ctx.app.emit(`error`, error, ctx)
+    }
     const token = authorization.replace('Bearer ', '');
     //验证token
     try {
@@ -43,7 +47,7 @@ const verifyAuth = async (ctx, next) => {
     } catch (err) {
         console.log(err);
         const error = new Error(errorType.UNAUTHORIZATION)
-        ctx.app.emit(`error`, error, ctx)
+        return ctx.app.emit(`error`, error, ctx)
     }
 
 }
