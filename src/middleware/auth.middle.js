@@ -31,7 +31,6 @@ const verifyLogin = async (ctx, next) => {
     await next()
 }
 const verifyAuth = async (ctx, next) => {
-    console.log(`验证授权`);
     //获取token
     const authorization = ctx.headers.authorization
     if (!authorization) {
@@ -55,12 +54,14 @@ const verifyAuth = async (ctx, next) => {
 }
 const verifyPermission = async (ctx, next) => {
     //获取参数
-    const { momentId } = ctx.params
-    const userId = ctx.user.id
-
+    const [resourceKey]  = Object.keys(ctx.params)
+    const tableName = resourceKey.replace('Id','')
+    const resourceId = ctx.params[resourceKey]
+    const {id} = ctx.user
+    
     //查询是否具有权限 -- service
     try {
-        const isPermission = await authService.checkMoment(momentId, userId)
+        const isPermission = await authService.checkResource(tableName,resourceId, id)
         if (!isPermission) throw new Error()
         await next()
     } catch (e) {
