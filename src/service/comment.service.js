@@ -21,6 +21,11 @@ class CommentService {
         const [res] = await connection.execute(sql,[commentId])
         return res
     }
+    async getCommentsByMomentId(momentId){
+        const sql = `SELECT * FROM COMMENT WHERE moment_id = ?`
+        const [res] = await connection.execute(sql,[momentId])
+        return res
+    }
 
 }
 module.exports = new CommentService()
