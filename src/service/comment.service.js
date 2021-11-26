@@ -22,7 +22,12 @@ class CommentService {
         return res
     }
     async getCommentsByMomentId(momentId){
-        const sql = `SELECT * FROM COMMENT WHERE moment_id = ?`
+        const sql = `SELECT 
+        c.id,c.content,c.moment_id momentId,c.comment_id commentId,c.createAt createTime,
+        JSON_OBJECT('id',u.id,'name',u.name) commenter
+        FROM COMMENT c
+        LEFT JOIN user u on c.user_id = u.id
+        WHERE c.moment_id = ?`
         const [res] = await connection.execute(sql,[momentId])
         return res
     }

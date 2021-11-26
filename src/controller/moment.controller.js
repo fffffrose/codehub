@@ -1,4 +1,10 @@
+const fs = require('fs');
+
 const momentService = require('../service/moment.service');
+const fileService = require('../service/file.service');
+
+const {PICTURE_PATH} = require('../constants/file-path');
+
 
 class MomentController {
     async create(ctx, next) {
@@ -34,6 +40,32 @@ class MomentController {
         const { momentId } = ctx.params
         const res = await momentService.remove(momentId)
         ctx.body = res
+    }
+    async addLabels(ctx, next) {
+        const { labels } = ctx
+        const { momentId } = ctx.params
+        //判断标签与动态是否建立了联系
+        for (let label of labels) {
+            const isExits = await momentService.hasLabel(momentId, label.id)
+            console.log(isExits);
+            if (!isExits) {
+                await momentService.addLabel(momentId, label.id)
+            }
+        }
+        ctx.body = {
+            statusCode: 200
+        }
+    }
+    async fileInfo(ctx, next) {
+        const { filename } = ctx.params
+        const {type} = ctx.query
+        const types = [`small`,'middle','large']
+        if(types.some(item => item === type)){
+            filename +=`-${type}`
+        }
+        const res = await fileService.getFileByFilename(filename)
+        ctx.response.set('content-type',res.mimetype)
+        ctx.body = fs.createReadStream(`${PICTURE_PATH}/${filename}`)
     }
 }
 

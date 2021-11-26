@@ -58,7 +58,6 @@ const verifyPermission = async (ctx, next) => {
     const tableName = resourceKey.replace('Id','')
     const resourceId = ctx.params[resourceKey]
     const {id} = ctx.user
-    
     //查询是否具有权限 -- service
     try {
         const isPermission = await authService.checkResource(tableName,resourceId, id)
